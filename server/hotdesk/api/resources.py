@@ -1,8 +1,10 @@
 """RESTful API resources."""
 from . import api
 from ..models import Desk
+from .schemas import DeskSchema
 from flask_restful import Resource
-from flask import jsonify
+
+desk_schema = DeskSchema(many=True)
 
 
 @api.resource('/api/desk_status/<string:desk_id>')
@@ -51,4 +53,4 @@ class DesksList(Resource):
         This returns all desks with booked status.
         """
         desks = Desk.query.all()
-        return jsonify(desks)
+        return desk_schema.dump(desks)

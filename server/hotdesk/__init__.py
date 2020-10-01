@@ -3,12 +3,14 @@ from flask import Flask
 from flask_bootstrap import Bootstrap
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
+from flask_marshmallow import Marshmallow
 import os
 import pathlib
 
 bootstrap = Bootstrap()
 db = SQLAlchemy()
 migrate = Migrate(compare_type=True)
+ma = Marshmallow()
 
 
 def create_app(test_config=None):
@@ -32,6 +34,7 @@ def create_app(test_config=None):
     bootstrap.init_app(app)
     db.init_app(app)
     migrate.init_app(app, db)
+    ma.init_app(app)
 
     from .main import main as main_blueprint
     app.register_blueprint(main_blueprint)

@@ -1,16 +1,10 @@
 """Model (databate table) definitions."""
 from . import db
 import datetime
-from dataclasses import dataclass
 
 
-@dataclass
 class Desk(db.Model):
     """Desk model."""
-
-    id: int
-    name: str
-    booked: bool
 
     __tablename__ = 'desks'
     id = db.Column(db.Integer, primary_key=True)
