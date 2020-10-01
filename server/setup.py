@@ -13,6 +13,8 @@ setup(
         "flask_migrate",
         "flask_restful",
         "flask_sqlalchemy",
-        "flask_wtf"
+        "flask_wtf",
+        "flask_marshmallow",
+        "marshmallow-sqlalchemy"
     ],
 )
