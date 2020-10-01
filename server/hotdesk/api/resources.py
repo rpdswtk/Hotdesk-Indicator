@@ -2,6 +2,7 @@
 from . import api
 from ..models import Desk
 from flask_restful import Resource
+from flask import jsonify
 
 
 @api.resource('/api/desk_status/<string:desk_id>')
@@ -37,3 +38,17 @@ class DeskStatus(Resource):
             "by": by,
             "until": until
             }
+
+
+@api.resource('/api/desk_status')
+class DesksList(Resource):
+    """Desk status list RESTful resource."""
+
+    def get(self):
+        """
+        Handle a get request to the DesksList resource.
+
+        This returns all desks with booked status.
+        """
+        desks = Desk.query.all()
+        return jsonify(desks)

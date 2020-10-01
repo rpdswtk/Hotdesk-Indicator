@@ -1,16 +1,27 @@
 """Model (databate table) definitions."""
 from . import db
 import datetime
+from dataclasses import dataclass
 
 
+@dataclass
 class Desk(db.Model):
     """Desk model."""
+
+    id: int
+    name: str
+    booked: bool
 
     __tablename__ = 'desks'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(6), unique=True)
     # One to many relationship to bookings
     bookings = db.relationship('Booking', backref='desk', lazy='dynamic')
+
+    @property
+    def booked(self):
+        """Property for is_booked."""
+        return self.is_booked()
 
     def is_booked(self):
         """Find if a desk is currently booked."""
