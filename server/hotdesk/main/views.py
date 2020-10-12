@@ -1,7 +1,6 @@
 """Main app views."""
 from . import main
 from .forms import BookingForm
-from .. import db
 from ..models import Booking, Desk
 from datetime import datetime
 from flask import render_template, redirect, url_for, flash
@@ -30,24 +29,15 @@ def book():
             from_when=from_when,
             until_when=until_when
             )
-        # Ensure the booking does not overlap with existing bookings
-        bookings = Booking.query.filter_by(desk_id=form.desk.data).all()
-        if any((booking.overlap(other) for other in bookings)):
-            flash("Your request overlaps with an existing booking.")
-            return render_template('book.html', form=form)
 
-        # Ensure the booking ends after it begins
-        if booking.from_when > booking.until_when:
-            flash("Your request ends after it begins.")
-            return render_template('book.html', form=form)
+        errors = booking.validate()
 
-        # Ensure the booking is not for zero time
-        if booking.from_when == booking.until_when:
-            flash("Your request is for zero time.")
-            return render_template('book.html', form=form)
+        if errors:
+            for error in errors:
+                flash(error)
+                return render_template('book.html', form=form)
 
-        db.session.add(booking)
-        db.session.commit()
+        booking.save()
         flash('Your desk is booked!')
         return redirect(url_for('main.bookings'))
     return render_template('book.html', form=form)

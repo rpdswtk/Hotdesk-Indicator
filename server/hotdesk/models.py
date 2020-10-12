@@ -72,3 +72,30 @@ class Booking(db.Model):
                 return True
 
         return False
+
+    def save(self):
+        """Save object to db."""
+        db.session.add(self)
+        db.session.commit()
+
+    def validate(self):
+        """Validate booking."""
+        errors = list()
+
+        # Ensure the booking does not overlap with existing bookings
+        bookings = Booking.query.filter_by(desk_id=self.desk_id).all()
+        if any((self.overlap(other) for other in bookings)):
+            errors.append("Your request overlaps with an existing booking.")
+
+        # Ensure the booking ends after it begins
+        if self.from_when > self.until_when:
+            errors.append("Your request ends after it begins.")
+
+        # Ensure the booking is not for zero time
+        if self.from_when == self.until_when:
+            errors.append("Your request is for zero time.")
+
+        if len(errors) > 0:
+            return errors
+        else:
+            return None
