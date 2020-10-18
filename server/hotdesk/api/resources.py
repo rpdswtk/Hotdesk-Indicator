@@ -8,6 +8,7 @@ from datetime import datetime
 
 desk_schema = DeskSchema(many=True)
 booking_schema = BookingSchema()
+bookings_schema = BookingSchema(many=True)
 
 DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 
@@ -64,6 +65,20 @@ class DesksList(Resource):
 @api.resource('/api/booking')
 class BookingResource(Resource):
     """Booking RESTful resource."""
+
+    def get(self):
+        """Handle a get request to get bookings between a given interval."""
+        start_date = datetime.strptime(
+            request.args['start_date'],
+            DATETIME_FORMAT
+        )
+        end_date = datetime.strptime(
+            request.args['end_date'],
+            DATETIME_FORMAT
+        )
+        return bookings_schema.dump(
+            Booking.get_between_interval(start_date, end_date)
+        )
 
     def post(self):
         """Handle a post request to create new booking."""

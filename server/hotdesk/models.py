@@ -1,6 +1,7 @@
 """Model (databate table) definitions."""
 from . import db
 import datetime
+from sqlalchemy import and_
 
 
 class Desk(db.Model):
@@ -99,3 +100,24 @@ class Booking(db.Model):
             return errors
         else:
             return None
+
+    @classmethod
+    def get_between_interval(cls, start_date, end_date):
+        """
+        Get bookings between interval.
+
+        :arg start_date: Start date of interval.
+        :type start_date: :class:`datetime`
+
+        :arg end_date: End date of interval.
+        :type end_date: :class:`datetime`
+
+        :returns: List of Booking objects.
+        :rtype: :class`list`
+        """
+        return cls.query.filter(
+            and_(
+                cls.from_when.between(start_date, end_date),
+                cls.until_when.between(start_date, end_date)
+            )
+        )
