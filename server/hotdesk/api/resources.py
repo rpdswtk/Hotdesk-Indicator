@@ -68,14 +68,25 @@ class BookingResource(Resource):
 
     def get(self):
         """Handle a get request to get bookings between a given interval."""
-        start_date = datetime.strptime(
-            request.args['start_date'],
-            DATETIME_FORMAT
-        )
-        end_date = datetime.strptime(
-            request.args['end_date'],
-            DATETIME_FORMAT
-        )
+        if 'start_date' in request.args and 'end_date' not in request.args:
+            return {"msg": "'end_date' argument missing"}, 400
+
+        if 'end_date' in request.args and 'start_date' not in request.args:
+            return {"msg": "'end_date' argument missing"}, 400
+
+        if 'start_date' not in request.args and 'end_date' not in request.args:
+            start_date = datetime.combine(datetime.today(),
+                                          datetime.min.time())
+            end_date = start_date.replace(hour=23, minute=59, second=59)
+        else:
+            start_date = datetime.strptime(
+                request.args['start_date'],
+                DATETIME_FORMAT
+            )
+            end_date = datetime.strptime(
+                request.args['end_date'],
+                DATETIME_FORMAT
+            )
         return bookings_schema.dump(
             Booking.get_between_interval(start_date, end_date)
         )
